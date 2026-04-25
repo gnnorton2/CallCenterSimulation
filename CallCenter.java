@@ -159,6 +159,10 @@ public class CallCenter {
      * period after creating each customer task.
      */
     public static void main(String[] args) {
-        // TODO: complete the main method
+        Thread greeterThread = new Thread(new Greeter());
+        greeterThread.start();
+        for (int i = 1; i <= 5; i++) {
+            new Thread(new Customer(i)).start();
+        }
     }
 }
