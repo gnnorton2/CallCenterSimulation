@@ -1,3 +1,4 @@
+
 //Brielle Norton & Alexis Evans
 /*
 You can import any additional package here.
@@ -8,50 +9,50 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.HashSet;
 import java.util.Set;
 import static java.lang.Thread.sleep;
+
 public class CallCenter {
     /*
-    Total number of customers that each agent will serve in this simulation.
-    */
+     * Total number of customers that each agent will serve in this simulation.
+     */
     private static final int CUSTOMERS_PER_AGENT = 5;
     /*
-    Total number of agents.
-    */
+     * Total number of agents.
+     */
     private static final int NUMBER_OF_AGENTS = 3;
     /*
-    Total number of customers to create for this simulation.
-    */
+     * Total number of customers to create for this simulation.
+     */
     private static final int NUMBER_OF_CUSTOMERS = NUMBER_OF_AGENTS *
             CUSTOMERS_PER_AGENT;
     /*
-    Number of threads to use for this simulation.
-    */
+     * Number of threads to use for this simulation.
+     */
     private static final int NUMBER_OF_THREADS = 10;
     /*
-    Shared queue of incoming customers waiting for the automated greeting.
-    */
-    private static final BlockingQueue<Integer> GREETING_QUEUE =
-            new LinkedBlockingQueue<>();
+     * Shared queue of incoming customers waiting for the automated greeting.
+     */
+    private static final BlockingQueue<Integer> GREETING_QUEUE = new LinkedBlockingQueue<>();
     /*
-    Shared queue of waiting customer calls.
-    */
-    private static final BlockingQueue<Integer> CALL_QUEUE =
-            new LinkedBlockingQueue<>();
+     * Shared queue of waiting customer calls.
+     */
+    private static final BlockingQueue<Integer> CALL_QUEUE = new LinkedBlockingQueue<>();
+
     /*
-    The Agent class.
-    */
+     * The Agent class.
+     */
     public static class Agent implements Runnable {
         /*
-        Tracks assigned random IDs so each agent still gets a unique value.
-        */
+         * Tracks assigned random IDs so each agent still gets a unique value.
+         */
         private static final Set<Integer> USED_AGENT_IDS = new HashSet<>();
-        //The ID of the agent
+        // The ID of the agent
         private final int ID;
 
         public Agent() {
             ID = generateUniqueAgentID();
         }
 
-        //Kept for compatibility with existing code that may still pass an int.
+        // Kept for compatibility with existing code that may still pass an int.
         public Agent(int i) {
             this();
         }
@@ -67,9 +68,7 @@ public class CallCenter {
         }
 
         public void run() {
-            for (int customersServed = 0;
-                 customersServed < CUSTOMERS_PER_AGENT;
-                 customersServed++) {
+            for (int customersServed = 0; customersServed < CUSTOMERS_PER_AGENT; customersServed++) {
                 try {
                     int customerID = CALL_QUEUE.take();
                     serve(customerID);
@@ -81,25 +80,26 @@ public class CallCenter {
         }
 
         /*
-                Your implementation must call the method below to serve each customer.
-                Do not modify this method.
-                */
+         * Your implementation must call the method below to serve each customer.
+         * Do not modify this method.
+         */
         public void serve(int customerID) {
             System.out.println("Agent " + ID + " is serving customer " +
                     customerID);
             try {
-// Simulate busy serving a customer by sleeping for a random
-                //period.
-                        sleep(ThreadLocalRandom.current().nextInt(10, 1000));
+                // Simulate busy serving a customer by sleeping for a random
+                // period.
+                sleep(ThreadLocalRandom.current().nextInt(10, 1000));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
     }
+
     /*
-    The greeter class.
-    */
-    public static class Greeter implements Runnable{
+     * The greeter class.
+     */
+    public static class Greeter implements Runnable {
         public void run() {
             int greetedCustomers = 0;
             while (greetedCustomers < NUMBER_OF_CUSTOMERS) {
@@ -116,39 +116,49 @@ public class CallCenter {
                 }
             }
         }
+
         /*
-        Your implementation must call the method below to greet each customer.
-        Do not modify this method.
-        */
+         * Your implementation must call the method below to greet each customer.
+         * Do not modify this method.
+         */
         public void greet(int customerID) {
             System.out.println("Greeting customer " + customerID);
             try {
-// Simulate busy greeting a customer by sleeping for a random period.
-                        sleep(ThreadLocalRandom.current().nextInt(10, 1000));
+                // Simulate busy greeting a customer by sleeping for a random period.
+                sleep(ThreadLocalRandom.current().nextInt(10, 1000));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
     }
+
     /*
-    The customer class.
-    */
+     * The customer class.
+     */
     public static class Customer implements Runnable {
-        //TODO: complete the Customer class
-//The ID of the customer.
         private final int ID;
-        //Feel free to modify the constructor
-        public Customer (int i){
+
+        public Customer(int i) {
             ID = i;
         }
+
+        public void run() {
+            try {
+                System.out.println("Customer " + ID + " has arrived.");
+                GREETING_QUEUE.put(ID);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
     }
+
     /*
-    Create the greeter and agents tasks first, and then create the customer
-    tasks.
-    to simulate a random interval between customer calls, sleep for a random
-    period after creating each customer task.
-    */
-    public static void main(String[] args){
-//TODO: complete the main method
+     * Create the greeter and agents tasks first, and then create the customer
+     * tasks.
+     * to simulate a random interval between customer calls, sleep for a random
+     * period after creating each customer task.
+     */
+    public static void main(String[] args) {
+        // TODO: complete the main method
     }
 }
