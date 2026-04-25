@@ -1,11 +1,11 @@
 
 //Brielle Norton & Alexis Evans
-/*
-You can import any additional package here.
-*/
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.Queue;
+import java.util.LinkedList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.Condition;
 import java.util.HashSet;
 import java.util.Set;
 import static java.lang.Thread.sleep;
@@ -28,14 +28,12 @@ public class CallCenter {
      * Number of threads to use for this simulation.
      */
     private static final int NUMBER_OF_THREADS = 10;
-    /*
-     * Shared queue of incoming customers waiting for the automated greeting.
-     */
-    private static final BlockingQueue<Integer> GREETING_QUEUE = new LinkedBlockingQueue<>();
-    /*
-     * Shared queue of waiting customer calls.
-     */
-    private static final BlockingQueue<Integer> CALL_QUEUE = new LinkedBlockingQueue<>();
+
+    private static final Queue<Integer> GREETING_QUEUE = new LinkedList<>();
+    private static final Queue<Integer> CALL_QUEUE = new LinkedList<>();
+    private static final Lock lock = new ReentrantLock();
+    private static final Condition notEmptyGreeting = lock.newCondition();
+    private static final Condition notEmptyCall = lock.newCondition();
 
     /*
      * The Agent class.
