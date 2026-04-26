@@ -28,7 +28,6 @@ public class CallCenter {
      * Number of threads to use for this simulation.
      */
     private static final int NUMBER_OF_THREADS = 10;
-
     private static final Queue<Integer> GREETING_QUEUE = new LinkedList<>();
     private static final Queue<Integer> CALL_QUEUE = new LinkedList<>();
     private static final Lock lock = new ReentrantLock();
@@ -158,17 +157,13 @@ public class CallCenter {
         }
 
         public void run() {
+            lock.lock();
+            System.out.println("Customer " + ID + " has arrived.");
             try {
-                System.out.println("Customer " + ID + " has arrived.");
-                lock.lock();
-                try {
-                    GREETING_QUEUE.add(ID);
-                    notEmptyGreeting.signal();
-                } finally {
-                    lock.unlock();
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+                GREETING_QUEUE.add(ID);
+                notEmptyGreeting.signal();
+            } finally {
+                lock.unlock();
             }
         }
     }
