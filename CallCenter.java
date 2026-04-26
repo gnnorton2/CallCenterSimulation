@@ -102,12 +102,20 @@ public class CallCenter {
             int greetedCustomers = 0;
             while (greetedCustomers < NUMBER_OF_CUSTOMERS) {
                 try {
-                    int customerID = GREETING_QUEUE.take();
-                    greet(customerID);
-                    CALL_QUEUE.put(customerID);
-                    System.out.println("Customer " + customerID +
-                            " has been placed in the serve queue");
-                    greetedCustomers++;
+                    lock.lock();
+                    try {
+                        while (GREETING_QUEUE.isEmpty()) {
+                            notEmptyGreeting.await();
+                        }
+                        int customerID = GREETING_QUEUE.remove();
+                        greet(customerID);
+                        CALL_QUEUE.add(customerID);
+                        notEmptyCall.signalAll();
+                        System.out.println("Customer: " + customerID + " has been placed in the serve queue.");
+                        greetedCustomers++;
+                    } finally {
+                        lock.unlock();
+                    }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     return;
@@ -143,7 +151,13 @@ public class CallCenter {
         public void run() {
             try {
                 System.out.println("Customer " + ID + " has arrived.");
-                GREETING_QUEUE.put(ID);
+                lock.lock();
+                try {
+                    GREETING_QUEUE.add(ID);
+                    notEmptyGreeting.signal();
+                } finally {
+                    lock.unlock();
+                }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
