@@ -1,5 +1,7 @@
 
 //Brielle Norton & Alexis Evans
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.Queue;
 import java.util.LinkedList;
@@ -175,10 +177,19 @@ public class CallCenter {
      * period after creating each customer task.
      */
     public static void main(String[] args) {
-        Thread greeterThread = new Thread(new Greeter());
-        greeterThread.start();
-        for (int i = 1; i <= 5; i++) {
-            new Thread(new Customer(i)).start();
+        ExecutorService executor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+        executor.execute(new Greeter());
+        for (int i = 0; i < NUMBER_OF_AGENTS; i++) {
+            executor.execute(new Agent());
         }
+        for (int i = 1; i <= NUMBER_OF_CUSTOMERS; i++) {
+            executor.execute(new Customer(i));
+            try {
+                sleep(ThreadLocalRandom.current().nextInt(50, 200));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        executor.shutdown();
     }
 }
