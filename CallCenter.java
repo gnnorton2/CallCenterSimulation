@@ -68,7 +68,16 @@ public class CallCenter {
         public void run() {
             for (int customersServed = 0; customersServed < CUSTOMERS_PER_AGENT; customersServed++) {
                 try {
-                    int customerID = CALL_QUEUE.take();
+                    lock.lock();
+                    int customerID;
+                    try {
+                        while (CALL_QUEUE.isEmpty()) {
+                            notEmptyCall.await();
+                        }
+                        customerID = CALL_QUEUE.remove();
+                    } finally {
+                        lock.unlock();
+                    }
                     serve(customerID);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
